@@ -64,9 +64,9 @@ will sit unanswered.
 ## Sending a pull request
 
 - Add the package to the group in the `Dockerfile` it belongs to, and its
-  command to `check.sh`, so the workflow proves it is there.
+  command to `image/check.sh`, so the workflow proves it is there.
 - Say in the description what the four answers above are.
-- The workflow builds the image, runs `check.sh` in it and prints the size.
+- The workflow builds the image, runs `image/check.sh` in it and prints the size.
   All three have to pass.
 
 ## For coding agents

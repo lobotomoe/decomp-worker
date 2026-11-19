@@ -34,6 +34,23 @@ RUN dpkg --add-architecture i386 \
 
 # No Wine prefix is made here: it is 327 MB compressed, a third of the
 # image, to save the few seconds Wine takes to make one on first use.
-COPY check.sh /usr/local/bin/decomp-worker-check
+
+# The machine is driven one command at a time, by a person or an agent, and
+# none of those commands may stop to ask. AGENTS.md lists what this sets.
+COPY image/env.sh /etc/decomp-worker/env.sh
+COPY AGENTS.md /etc/decomp-worker/AGENTS.md
+COPY image/check.sh /usr/local/bin/decomp-worker-check
+COPY image/job.sh /usr/local/bin/decomp-worker-job
+COPY image/info.sh /usr/local/bin/decomp-worker-info
+ARG BUILT=unknown
+# bash.bashrc returns at its first lines when the shell is not interactive,
+# so the environment goes in front of them.
+RUN sed -i '1i . /etc/decomp-worker/env.sh' /etc/bash.bashrc \
+ && chmod +x /usr/local/bin/decomp-worker-* \
+ && echo "$BUILT" > /etc/decomp-worker/built \
+ && printf 'APT::Get::Assume-Yes "true";\nAcquire::ForceIPv4 "true";\nAcquire::http::Timeout "30";\nAcquire::Retries "3";\n' > /etc/apt/apt.conf.d/90decomp-worker \
+ && git config --system --add safe.directory '*' \
+ && git config --system advice.detachedHead false
+
 WORKDIR /root
 CMD ["sleep", "infinity"]

@@ -24,7 +24,23 @@ Ubuntu 22.04 for x86-64 with:
 - **Running a long job**: tmux, htop, GNU parallel, pv
 - **Reading results**: git, jq, ripgrep, file, hexdump, tree
 
-`decomp-worker-check` on a machine proves all of it is there.
+`decomp-worker-check` on a machine proves all of it is there and working.
+
+## Made to be driven by an agent
+
+A rented machine is worked one command at a time over SSH, more and more
+often by a coding agent. The image is set up for that:
+
+- `decomp-worker-info` says what the machine is and how to use it, in one
+  call (`--json` for a program).
+- `decomp-worker-job` runs a long command detached and keeps its exit code,
+  so "is it done, and how did it end" has an answer that is not a guess.
+- Nothing stops to ask: no pager, no apt question, no colour codes; Wine
+  prints the program's output and not its own diagnostics.
+- These settings reach `ssh host command`, which Docker's own `ENV` does not.
+
+[AGENTS.md](AGENTS.md) is the page for whoever is driving, with the traps a
+remote machine sets.
 
 ## What is not in it
 

@@ -29,8 +29,11 @@ jobs:
           tags: decomp-worker:candidate
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      # Docker's default seccomp profile on this runner refuses 32-bit Wine's
+      # socket call ("wine: socket : Function not implemented"); the same
+      # check passes on a rented machine, so the profile is lifted here.
       - name: Check what is in it
-        run: docker run --rm decomp-worker:candidate decomp-worker-check
+        run: docker run --rm --security-opt seccomp=unconfined decomp-worker:candidate decomp-worker-check
       # A pull request's size is read here, against the limit CONTRIBUTING.md sets.
       - name: Size
         run: |

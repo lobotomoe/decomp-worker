@@ -14,5 +14,9 @@ scratch="$(mktemp -d)"
 trap 'rm -rf "$scratch"' EXIT
 printf '#include <stdio.h>\nint main(void) { puts("ran under wine"); return 0; }\n' > "$scratch/hello.c"
 i686-w64-mingw32-gcc -o "$scratch/hello.exe" "$scratch/hello.c"
-[ "$(wine "$scratch/hello.exe" 2>/dev/null | tr -d '\r')" = "ran under wine" ] || { echo "wine did not run a 32-bit program" >&2; exit 1; }
+if ! wine "$scratch/hello.exe" > "$scratch/out" 2> "$scratch/err" || ! grep -q "ran under wine" "$scratch/out"; then
+	echo "wine did not run a 32-bit program:" >&2
+	cat "$scratch/out" "$scratch/err" >&2
+	exit 1
+fi
 echo "decomp-worker: all there"

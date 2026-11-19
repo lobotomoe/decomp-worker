@@ -32,9 +32,9 @@ RUN dpkg --add-architecture i386 \
         wine wine32 wine64 \
  && rm -rf /var/lib/apt/lists/*
 
-# A build that holds thousands of objects open (a linker run under wibo does)
-# stops without a message at Docker's soft limit of 1024 descriptors.
-RUN printf '* soft nofile 65536\n* hard nofile 65536\n' > /etc/security/limits.d/nofile.conf
+# Wine's first run in a new prefix takes its time and fills the terminal;
+# done here, the first compile on a machine starts at once.
+RUN wineboot --init && wineserver --wait
 
 COPY check.sh /usr/local/bin/decomp-worker-check
 WORKDIR /root

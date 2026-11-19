@@ -34,11 +34,13 @@ jobs:
       # check passes on a rented machine, so the profile is lifted here.
       - name: Check what is in it
         run: docker run --rm --security-opt seccomp=unconfined decomp-worker:candidate decomp-worker-check
-      # A pull request's size is read here, against the limit CONTRIBUTING.md sets.
+      # The limit is CONTRIBUTING.md's. gzip -1 over the saved image came
+      # within 1% of what the registry stored (1114 against 1122 MB).
       - name: Size
         run: |
-          docker save decomp-worker:candidate | gzip -1 | wc -c \
-            | awk '{ printf "compressed (gzip -1): %d MB\n", $1 / 1000000 }' | tee -a "$GITHUB_STEP_SUMMARY"
+          size=$(( $(docker save decomp-worker:candidate | gzip -1 | wc -c) / 1000000 ))
+          echo "compressed: $size MB of 1000" | tee -a "$GITHUB_STEP_SUMMARY"
+          [ "$size" -le 1000 ]
       - if: github.event_name != 'pull_request'
         uses: docker/login-action@v4
         with:

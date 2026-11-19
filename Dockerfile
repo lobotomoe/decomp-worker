@@ -32,10 +32,8 @@ RUN dpkg --add-architecture i386 \
         wine wine32 wine64 \
  && rm -rf /var/lib/apt/lists/*
 
-# Wine's first run in a new prefix takes its time and fills the terminal;
-# done here, the first compile on a machine starts at once.
-RUN wineboot --init && wineserver --wait
-
+# No Wine prefix is made here: it is 327 MB compressed, a third of the
+# image, to save the few seconds Wine takes to make one on first use.
 COPY check.sh /usr/local/bin/decomp-worker-check
 WORKDIR /root
 CMD ["sleep", "infinity"]

@@ -49,6 +49,13 @@ Anywhere else:
 
     docker run --rm -it -v "$PWD":/work -w /work ghcr.io/lobotomoe/decomp-worker bash
 
+## Wine under a strict Docker
+
+32-bit Wine needs a system call some Docker installations refuse; it then
+stops with `wine: socket : Function not implemented`. GitHub's hosted runners
+are set up that way. Add `--security-opt seccomp=unconfined` to `docker run`
+there. On vast.ai it runs as is.
+
 ## Changing it
 
 Something missing, or something nobody needs? [CONTRIBUTING.md](CONTRIBUTING.md)

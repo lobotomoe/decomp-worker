@@ -14,10 +14,17 @@ a run has to be repeatable.
 
 Ubuntu 22.04 for x86-64 with:
 
-- Wine, 32 and 64 bit, for Windows compilers that wibo does not run
-- Python 3 with numpy and capstone, ninja, make, patch
-- gcc, g++ and the i686 MinGW cross compiler
-- git, rsync, curl, wget, unzip, xz, zstd, an SSH server, tmux
+- **Wine**, 32 and 64 bit, for Windows compilers that wibo does not run
+- **Building**: gcc, g++, make, ninja, cmake, the i686 MinGW cross compiler;
+  Python 3 with pip, venv, numpy, capstone and pyelftools
+- **Binutils** for MIPS, PowerPC and ARM (`mips-linux-gnu-`,
+  `powerpc-linux-gnu-`, `arm-none-eabi-`)
+- **Moving files**: an SSH server and client, rsync, rclone, curl, wget,
+  aria2; zip, 7z, xz, zstd
+- **Running a long job**: tmux, htop, GNU parallel, pv
+- **Reading results**: git, jq, ripgrep, file, hexdump, tree
+
+`decomp-worker-check` on a machine proves all of it is there.
 
 ## What is not in it
 
@@ -44,5 +51,9 @@ Anywhere else:
 
 ## Changing it
 
-Edit the `Dockerfile` and push; the workflow builds and publishes the image.
-It also rebuilds on the first of each month for Ubuntu's updates.
+Something missing, or something nobody needs? [CONTRIBUTING.md](CONTRIBUTING.md)
+says what belongs in the image and how to ask. Requests from coding agents
+are as welcome as from people, on the same terms.
+
+The workflow builds the image, checks it and publishes it on every push to
+`main`, and rebuilds it on the first of each month for Ubuntu's updates.

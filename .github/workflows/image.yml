@@ -3,7 +3,9 @@ name: image
 on:
   push:
     branches: [main]
-    paths: [Dockerfile, .github/workflows/image.yml]
+    paths: [Dockerfile, check.sh, .github/workflows/image.yml]
+  pull_request:
+    paths: [Dockerfile, check.sh, .github/workflows/image.yml]
   schedule:
     # Monthly, for Ubuntu's security updates.
     - cron: "0 4 1 * *"
@@ -18,19 +20,38 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v4
-      - uses: docker/login-action@v4
+      - name: Build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: decomp-worker:candidate
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Check what is in it
+        run: docker run --rm decomp-worker:candidate decomp-worker-check
+      # A pull request's size is read here, against the limit CONTRIBUTING.md sets.
+      - name: Size
+        run: |
+          docker save decomp-worker:candidate | gzip -1 | wc -c \
+            | awk '{ printf "compressed (gzip -1): %d MB\n", $1 / 1000000 }' | tee -a "$GITHUB_STEP_SUMMARY"
+      - if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - id: meta
+      - if: github.event_name != 'pull_request'
+        id: meta
         uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest
             type=raw,value={{date 'YYYY-MM-DD'}}
-      - uses: docker/build-push-action@v7
+      - if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64
@@ -38,4 +59,3 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max

@@ -1,0 +1,35 @@
+name: Add to the image
+description: Ask for a package or tool to be installed in the image
+labels: [addition]
+body:
+  - type: markdown
+    attributes:
+      value: Read CONTRIBUTING.md first. One addition to a request.
+  - type: input
+    id: what
+    attributes:
+      label: What to add
+      description: The exact Ubuntu package name, or the release URL.
+    validations:
+      required: true
+  - type: textarea
+    id: who
+    attributes:
+      label: Which projects need it
+      description: By name. At least two, or one console family.
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: How it is installed today, and how long that takes
+      description: The command, and the time measured on a fresh machine.
+    validations:
+      required: true
+  - type: input
+    id: size
+    attributes:
+      label: How much it adds
+      description: In megabytes, compressed if you know it.
+    validations:
+      required: true

@@ -21,7 +21,7 @@ if ! wine "$scratch/hello.exe" > "$scratch/out" 2> "$scratch/err" || ! grep -q "
 fi
 # The environment has to reach a shell that is given one command, which is
 # how sshd runs `ssh host command`.
-[ "$(bash -c 'echo $PAGER')" = "cat" ] || { echo "the environment does not reach a command shell" >&2; exit 1; }
+[ "$(env -i SSH_CLIENT=check bash -c 'echo $PAGER')" = "cat" ] || { echo "the environment does not reach a command shell" >&2; exit 1; }
 export DECOMP_WORKER_JOBS="$scratch/jobs"
 decomp-worker-job start probe -- bash -c 'echo out; exit 7' > /dev/null
 code=0; decomp-worker-job wait probe 20 > /dev/null || code=$?

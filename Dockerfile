@@ -5,9 +5,14 @@
 # CONTRIBUTING.md says what belongs here.
 FROM ubuntu:22.04
 
+# For `docker run`; a session opened over SSH gets the same from
+# image/env.sh, since sshd passes none of this on.
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
-    WINEDEBUG=-all
+    WINEDEBUG=-all \
+    PAGER=cat GIT_PAGER=cat SYSTEMD_PAGER=cat \
+    NO_COLOR=1 \
+    PYTHONUNBUFFERED=1
 
 RUN dpkg --add-architecture i386 \
  && apt-get update \

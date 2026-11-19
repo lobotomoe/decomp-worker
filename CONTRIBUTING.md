@@ -30,6 +30,12 @@ that project uses it or not. So the question for anything new is:
 5. **Within the size.** The image stays under 1 GB compressed. Anything that
    adds more than 50 MB needs the saving measured, not estimated.
 
+The limit is a tripwire, not a principle: it is there so that growth is a
+decision somebody made. It moves when a measurement says so. Show that what
+you add saves more time on a machine's start than its megabytes cost to pull
+(at 200 Mbit/s, 100 MB is about four seconds, plus unpacking), and raising
+the number in the workflow is part of the same pull request.
+
 ## It does not belong
 
 - Compilers and SDKs for a console, and anything else that is not ours to

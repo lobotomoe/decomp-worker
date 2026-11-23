@@ -27,7 +27,7 @@ RUN dpkg --add-architecture i386 \
         git file jq ripgrep tree bsdextrautils \
     # Building.
         build-essential ninja-build cmake pkg-config patch \
-        python3 python3-pip python3-venv python3-numpy python3-capstone python3-pyelftools \
+        python3 python3-pip python3-venv python3-numpy python3-capstone python3-pyelftools python3-pytest python3-pytest-xdist \
     # Binutils for the consoles' processors, and MinGW for building a
     # Windows tool from source.
         binutils-mips-linux-gnu binutils-powerpc-linux-gnu binutils-arm-none-eabi \

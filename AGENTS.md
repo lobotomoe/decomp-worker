@@ -46,8 +46,9 @@ that greps a log for "done" cannot, and waits forever on the third.
 `decomp-worker-check` lists and proves it. Moving files: rsync, rclone,
 aria2c, curl, wget. Archives: 7z, zip, xz, zstd. Reading: rg, jq, file,
 hexdump, tree. Building: gcc, ninja, cmake, make, python3 with numpy,
-capstone, pyelftools; `python3 -m venv` for anything else. Binutils:
-`mips-linux-gnu-`, `powerpc-linux-gnu-`, `arm-none-eabi-`. Wine 32 and 64.
+capstone, pyelftools, pytest and pytest-xdist; `python3 -m venv` for
+anything else. Binutils: `mips-linux-gnu-`, `powerpc-linux-gnu-`,
+`arm-none-eabi-`. Wine 32 and 64.
 
 Missing something every project would need? CONTRIBUTING.md in
 github.com/lobotomoe/decomp-worker says how to ask.

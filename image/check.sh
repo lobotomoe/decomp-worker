@@ -9,7 +9,7 @@ for tool in ssh rsync rclone curl wget aria2c unzip zip 7z xz zstd tmux htop par
             i686-w64-mingw32-gcc wine; do
 	command -v "$tool" >/dev/null || { echo "missing: $tool" >&2; exit 1; }
 done
-python3 -c "import numpy, capstone, elftools, venv"
+python3 -c "import numpy, capstone, elftools, venv, pytest, xdist"
 scratch="$(mktemp -d)"
 trap 'rm -rf "$scratch"' EXIT
 printf '#include <stdio.h>\nint main(void) { puts("ran under wine"); return 0; }\n' > "$scratch/hello.c"

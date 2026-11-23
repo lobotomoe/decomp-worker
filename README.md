@@ -16,7 +16,7 @@ Ubuntu 22.04 for x86-64 with:
 
 - **Wine**, 32 and 64 bit, for Windows compilers that wibo does not run
 - **Building**: gcc, g++, make, ninja, cmake, the i686 MinGW cross compiler;
-  Python 3 with pip, venv, numpy, capstone and pyelftools
+  Python 3 with pip, venv, numpy, capstone, pyelftools, pytest and pytest-xdist
 - **Binutils** for MIPS, PowerPC and ARM (`mips-linux-gnu-`,
   `powerpc-linux-gnu-`, `arm-none-eabi-`)
 - **Moving files**: an SSH server and client, rsync, rclone, curl, wget,

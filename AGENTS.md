@@ -11,6 +11,21 @@ time. `decomp-worker-info` prints this on the machine.
     decomp-worker-job log build 40     # the last 40 lines
     decomp-worker-job list
 
+    decomp-worker-job where build      # the stack of its busiest Python process
+
+A running job's `status` says what it is doing under its first line: the
+busiest process of its tree, the cores the tree used over the last second
+(1.0 on a 32-core machine is a single-threaded step), how long the log has
+been quiet with its last line, and the job's own progress. Every job is
+handed `DECOMP_WORKER_PROGRESS`, a file to append lines like
+`similar: 1200 of 3700` to; status prints the last one and its age.
+
+`where` asks the process for its stack with SIGUSR1, which every Python
+process a job starts catches (the image loads `decomp_worker_stacks` into
+it). A rented machine allows no ptrace of a process that is not a child, so
+py-spy cannot attach there. A process that does not catch the signal, one
+started with `python3 -S` or before this image, is refused, not ended.
+
 A job outlives the SSH connection that started it and keeps its exit code.
 `status` tells apart running, finished and gone (machine restarted): a loop
 that greps a log for "done" cannot, and waits forever on the third.

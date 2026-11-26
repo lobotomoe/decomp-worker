@@ -26,5 +26,26 @@ export DECOMP_WORKER_JOBS="$scratch/jobs"
 decomp-worker-job start probe -- bash -c 'echo out; exit 7' > /dev/null
 code=0; decomp-worker-job wait probe 20 > /dev/null || code=$?
 [ "$code" = 7 ] && [ "$(decomp-worker-job log probe)" = "out" ] || { echo "decomp-worker-job lost a job's exit code or output" >&2; exit 1; }
+# A running job reports its progress and gives its Python stack, and a
+# process that does not catch SIGUSR1 is refused rather than ended by it.
+decomp-worker-job start spin -- python3 -c '
+import os
+def spin_for_the_check():
+    with open(os.environ["DECOMP_WORKER_PROGRESS"], "a") as progress:
+        for i in range(10**10):
+            if i % 1000000 == 0:
+                progress.write(f"spin: {i}\n"); progress.flush()
+spin_for_the_check()' > /dev/null
+decomp-worker-job start bare -- python3 -S -c 'import time
+while True: time.sleep(0.05)' > /dev/null
+sleep 2
+decomp-worker-job status spin > "$scratch/status" || true
+grep -q "progress: spin:" "$scratch/status" || { echo "a job's progress did not reach its status:" >&2; cat "$scratch/status" >&2; exit 1; }
+decomp-worker-job where spin > "$scratch/where" || { echo "decomp-worker-job where failed:" >&2; cat "$scratch/where" >&2; exit 1; }
+grep -q "spin_for_the_check" "$scratch/where" || { echo "the stack did not name the running function:" >&2; cat "$scratch/where" >&2; exit 1; }
+if decomp-worker-job where bare > /dev/null 2>&1; then echo "where signalled a process that does not catch SIGUSR1" >&2; exit 1; fi
+code=0; decomp-worker-job status bare > /dev/null || code=$?
+[ "$code" = 3 ] || { echo "where ended a process that does not catch SIGUSR1" >&2; exit 1; }
+kill -- -"$(cat "$DECOMP_WORKER_JOBS/spin/pid")" -"$(cat "$DECOMP_WORKER_JOBS/bare/pid")"
 decomp-worker-info --json | jq -e .cores > /dev/null
 echo "decomp-worker: all there"

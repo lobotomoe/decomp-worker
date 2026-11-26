@@ -47,11 +47,18 @@ COPY AGENTS.md /etc/decomp-worker/AGENTS.md
 COPY image/check.sh /usr/local/bin/decomp-worker-check
 COPY image/job.sh /usr/local/bin/decomp-worker-job
 COPY image/info.sh /usr/local/bin/decomp-worker-info
+# Every Python process a job starts prints its stack on SIGUSR1, for
+# `decomp-worker-job where`: a rented machine allows no ptrace, so py-spy
+# cannot attach there.
+COPY image/stacks.py /etc/decomp-worker/decomp_worker_stacks.py
 ARG BUILT=unknown
 # bash.bashrc returns at its first lines when the shell is not interactive,
 # so the environment goes in front of them.
 RUN sed -i '1i . /etc/decomp-worker/env.sh' /etc/bash.bashrc \
  && chmod +x /usr/local/bin/decomp-worker-* \
+ && site="$(python3 -c 'import site; print(site.getsitepackages()[0])')" \
+ && cp /etc/decomp-worker/decomp_worker_stacks.py "$site/" \
+ && echo "import decomp_worker_stacks" > "$site/decomp_worker_stacks.pth" \
  && echo "$BUILT" > /etc/decomp-worker/built \
  && printf 'APT::Get::Assume-Yes "true";\nAcquire::ForceIPv4 "true";\nAcquire::http::Timeout "30";\nAcquire::Retries "3";\n' > /etc/apt/apt.conf.d/90decomp-worker \
  && git config --system --add safe.directory '*' \

@@ -50,7 +50,9 @@ ticks() { local total=0 pid stat; local -a fields
 sample() { local pid; declare -A before
 	for pid in "$@"; do before[$pid]=$(ticks "$pid"); done
 	sleep 1
-	for pid in "$@"; do echo "$(( $(ticks "$pid") - ${before[$pid]:-0} )) $pid"; done | sort -rn; }
+	# A process that ended within the second has no ticks left to read and
+	# counts as none, not as the negative of what it had.
+	for pid in "$@"; do [ -e "/proc/$pid" ] && echo "$(( $(ticks "$pid") - ${before[$pid]:-0} )) $pid"; done | sort -rn; }
 describe() {
 	local job="$1" used=0 top="" ticked pid hz quiet
 	local -a pids
